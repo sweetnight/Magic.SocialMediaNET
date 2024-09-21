@@ -1,0 +1,234 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v6.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v6.0": {
+      "Magic.SocialMediaNET/1.0.0": {
+        "dependencies": {
+          "Magic.BrowserAutomationNET": "1.0.0",
+          "Magic.DataNET": "1.0.0",
+          "Magic.HelperNET": "1.0.0",
+          "Magic.SystemAddonsNET": "1.0.0",
+          "Newtonsoft.Json": "13.0.3",
+          "Selenium.Support": "4.23.0",
+          "Selenium.WebDriver": "4.23.0"
+        },
+        "runtime": {
+          "Magic.SocialMediaNET.dll": {}
+        }
+      },
+      "Newtonsoft.Json/13.0.3": {
+        "runtime": {
+          "lib/net6.0/Newtonsoft.Json.dll": {
+            "assemblyVersion": "13.0.0.0",
+            "fileVersion": "13.0.3.27908"
+          }
+        }
+      },
+      "Selenium.Support/4.23.0": {
+        "dependencies": {
+          "Selenium.WebDriver": "4.23.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/WebDriver.Support.dll": {
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "4.0.0.0"
+          }
+        }
+      },
+      "Selenium.WebDriver/4.23.0": {
+        "dependencies": {
+          "Newtonsoft.Json": "13.0.3"
+        },
+        "runtime": {
+          "lib/netstandard2.0/WebDriver.dll": {
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "4.0.0.0"
+          }
+        }
+      },
+      "Selenium.WebDriver.ChromeDriver/127.0.6533.8800": {},
+      "Stub.System.Data.SQLite.Core.NetStandard/1.0.118": {
+        "runtime": {
+          "lib/netstandard2.1/System.Data.SQLite.dll": {
+            "assemblyVersion": "1.0.118.0",
+            "fileVersion": "1.0.118.0"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/linux-x64/native/SQLite.Interop.dll": {
+            "rid": "linux-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/osx-x64/native/SQLite.Interop.dll": {
+            "rid": "osx-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x64/native/SQLite.Interop.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "1.0.118.0"
+          },
+          "runtimes/win-x86/native/SQLite.Interop.dll": {
+            "rid": "win-x86",
+            "assetType": "native",
+            "fileVersion": "1.0.118.0"
+          }
+        }
+      },
+      "System.CodeDom/8.0.0": {
+        "runtime": {
+          "lib/net6.0/System.CodeDom.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.23.53103"
+          }
+        }
+      },
+      "System.Data.SQLite.Core/1.0.118": {
+        "dependencies": {
+          "Stub.System.Data.SQLite.Core.NetStandard": "1.0.118"
+        }
+      },
+      "System.Management/8.0.0": {
+        "dependencies": {
+          "System.CodeDom": "8.0.0"
+        },
+        "runtime": {
+          "lib/net6.0/System.Management.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.23.53103"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/net6.0/System.Management.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.23.53103"
+          }
+        }
+      },
+      "Magic.BrowserAutomationNET/1.0.0": {
+        "dependencies": {
+          "Magic.HelperNET": "1.0.0",
+          "Newtonsoft.Json": "13.0.3",
+          "Selenium.Support": "4.23.0",
+          "Selenium.WebDriver": "4.23.0",
+          "Selenium.WebDriver.ChromeDriver": "127.0.6533.8800"
+        },
+        "runtime": {
+          "Magic.BrowserAutomationNET.dll": {}
+        }
+      },
+      "Magic.DataNET/1.0.0": {
+        "dependencies": {
+          "System.Data.SQLite.Core": "1.0.118"
+        },
+        "runtime": {
+          "Magic.DataNET.dll": {}
+        }
+      },
+      "Magic.HelperNET/1.0.0": {
+        "runtime": {
+          "Magic.HelperNET.dll": {}
+        }
+      },
+      "Magic.SystemAddonsNET/1.0.0": {
+        "dependencies": {
+          "System.Management": "8.0.0"
+        },
+        "runtime": {
+          "Magic.SystemAddonsNET.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Magic.SocialMediaNET/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Newtonsoft.Json/13.0.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ==",
+      "path": "newtonsoft.json/13.0.3",
+      "hashPath": "newtonsoft.json.13.0.3.nupkg.sha512"
+    },
+    "Selenium.Support/4.23.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ykT3saViorD54A6Eizw6CnNp8SuuIx4E01QhtEnZVrFvgH6P6mSgpCgfDlCX2RNwbGnrpkeoG5eV1dOGmzP12w==",
+      "path": "selenium.support/4.23.0",
+      "hashPath": "selenium.support.4.23.0.nupkg.sha512"
+    },
+    "Selenium.WebDriver/4.23.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-jQxNGGuWeSw/+xeZVv+0TL6pVnKeLsBYlxvADY7iGyq1yjgtUFNxGK01t0Op6+FMVdFLcMysL4Z0VdTvzFn0eA==",
+      "path": "selenium.webdriver/4.23.0",
+      "hashPath": "selenium.webdriver.4.23.0.nupkg.sha512"
+    },
+    "Selenium.WebDriver.ChromeDriver/127.0.6533.8800": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-owJRhq3twE/5Z7PztbctWR6CJCZ31zaTUCztyWPDFM5irS9mcr2O3odXk6WBaN3ts26Vwll56joDMJo+foEzIg==",
+      "path": "selenium.webdriver.chromedriver/127.0.6533.8800",
+      "hashPath": "selenium.webdriver.chromedriver.127.0.6533.8800.nupkg.sha512"
+    },
+    "Stub.System.Data.SQLite.Core.NetStandard/1.0.118": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-4TS8IZvDj0ud6utxfXI6zv9Ditk4U9Kt9KqLyAIQGcU3GXp5oGBHgGZifq+APcqRCayuN/MSE8t9ZZmygtU28A==",
+      "path": "stub.system.data.sqlite.core.netstandard/1.0.118",
+      "hashPath": "stub.system.data.sqlite.core.netstandard.1.0.118.nupkg.sha512"
+    },
+    "System.CodeDom/8.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-WTlRjL6KWIMr/pAaq3rYqh0TJlzpouaQ/W1eelssHgtlwHAH25jXTkUphTYx9HaIIf7XA6qs/0+YhtLEQRkJ+Q==",
+      "path": "system.codedom/8.0.0",
+      "hashPath": "system.codedom.8.0.0.nupkg.sha512"
+    },
+    "System.Data.SQLite.Core/1.0.118": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-2V1PsfBeqWlZxF/VtB8lQKPfDBayCU8zD5Xc3Mq7cILOa2ZqpPDSwMP0fTfk1gtGSStSk//DxKiGy6zwCQs7Uw==",
+      "path": "system.data.sqlite.core/1.0.118",
+      "hashPath": "system.data.sqlite.core.1.0.118.nupkg.sha512"
+    },
+    "System.Management/8.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-jrK22i5LRzxZCfGb+tGmke2VH7oE0DvcDlJ1HAKYU8cPmD8XnpUT0bYn2Gy98GEhGjtfbR/sxKTVb+dE770pfA==",
+      "path": "system.management/8.0.0",
+      "hashPath": "system.management.8.0.0.nupkg.sha512"
+    },
+    "Magic.BrowserAutomationNET/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Magic.DataNET/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Magic.HelperNET/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Magic.SystemAddonsNET/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

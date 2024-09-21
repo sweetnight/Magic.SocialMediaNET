@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyVersion>41.0.0.0</AssemblyVersion>
+    <FileVersion>41.0.0.0</FileVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Selenium.Support" Version="4.23.0" />
+    <PackageReference Include="Selenium.WebDriver" Version="4.23.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Magic.BrowserAutomationNET\Magic.BrowserAutomationNET.csproj" />
+    <ProjectReference Include="..\Magic.DataNET\Magic.DataNET.csproj" />
+    <ProjectReference Include="..\Magic.HelperNET\Magic.HelperNET.csproj" />
+    <ProjectReference Include="..\Magic.SystemAddonsNET\Magic.SystemAddonsNET.csproj" />
+  </ItemGroup>
+
+</Project>

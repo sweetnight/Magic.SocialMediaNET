@@ -143,7 +143,24 @@ namespace Magic.SocialMediaNET
 
             Debug.WriteLine($"=========== tap tap sebanyak {tapAmount} kali");
 
+            /*
             WebElement likeContainer = Chrome!.FindElementByXPath($@"//div[contains({Chrome.ToLower("@class")}, 'divlikecontainer') and .//div[contains({Chrome.ToLower("@class")}, 'divlikebtnicon')]]", Timeout);
+
+            WebElement likeContainer = Chrome!.FindElementByXPath(
+                $"//div[{Chrome.ToLower("@data-e2e")}='top-givers']" +
+                $"/ancestor::div[contains({Chrome.ToLower("@class")}, 'overflow-hidden')]" +
+                "/div[5]"
+            , Timeout);
+            */
+
+            WebElement likeContainer = Chrome!.FindElementByXPath(
+                $"//div[contains({Chrome.ToLower("@class")}, 'divlikecontainer') and .//div[contains({Chrome.ToLower("@class")}, 'divlikebtnicon')]]" +
+                " | " + // <-- Menggunakan operator OR dalam XPath
+                $"//div[{Chrome.ToLower("@data-e2e")}='top-givers']" +
+                $"/ancestor::div[contains({Chrome.ToLower("@class")}, 'overflow-hidden')]" +
+                "/div[5]"
+            , Timeout);
+
 
             Thread.Sleep(5000);
 
@@ -201,7 +218,10 @@ namespace Magic.SocialMediaNET
 
             Debug.WriteLine("============ komen komen komen komen komen komen komen komen komen");
 
-            WebElement commentInput = Chrome!.FindElementByXPath($@"//div[{Chrome.ToLower("@data-e2e")}='comment-input']//div[{Chrome.ToLower("@contenteditable")}='plaintext-only']", Timeout);
+            //WebElement commentInput = Chrome!.FindElementByXPath($@"//div[{Chrome.ToLower("@data-e2e")}='comment-input']//div[{Chrome.ToLower("@contenteditable")}='plaintext-only']", Timeout);
+            WebElement commentInput = Chrome!.FindElementByXPath(
+                $"//div[./div[1]//div[{Chrome.ToLower("@data-e2e")}='top-givers']]/following-sibling::div//div[@contenteditable='plaintext-only']"
+            , Timeout);
 
             foreach(string comment in comments)
             {
@@ -218,17 +238,18 @@ namespace Magic.SocialMediaNET
         public bool IsLiveEnded(Chrome chrome)
         {
 
-            WebElement playerContainer = Chrome!.FindElementByXPath($@"//div[contains({Chrome.ToLower("@class")}, 'divliveroomplayerwrapper')]");
-            WebElement videoElement = Chrome.FindElementByXPath($@"//div[contains({Chrome.ToLower("@class")}, 'divliveroomplayerwrapper')]//video", 1);
+            //WebElement playerContainer = Chrome!.FindElementByXPath($@"//div[contains({Chrome.ToLower("@class")}, 'divliveroomplayerwrapper')]");
+            //WebElement videoElement = Chrome.FindElementByXPath($@"//div[contains({Chrome.ToLower("@class")}, 'divliveroomplayerwrapper')]//video", 1);
 
-            if (!videoElement.State)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            WebElement playerContainer = chrome!.FindElementByXPath(
+                $@"//div[contains({Chrome.ToLower("@data-e2e")}, 'live-room-content')]"
+            );
+
+            WebElement videoElement = chrome.FindElementByXPath(
+                $@"//div[contains({Chrome.ToLower("@data-e2e")}, 'live-room-content')]//video", 1
+            );
+
+            return !videoElement.State;
 
         } // end of method
 

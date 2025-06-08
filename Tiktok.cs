@@ -90,16 +90,20 @@ namespace Magic.SocialMediaNET
             // ambil salah satu dari 3 tagname. 2 buah script untuk indikator sudah login. 1 buah input untuk indikator belum login.
             string xpath = $"//a[@data-e2e='nav-profile' and starts-with(@href, '/@') and string-length(@href) > 2]|(//button[contains(@class, 'TUXButton') and .//div[normalize-space({Chrome.ToLower("text()")}) = 'log in']])[1]";
 
+            Debug.WriteLine("================== A");
             BrowserAutomationNET.WebElement navProfile = Chrome!.FindElementByXPath(xpath, Timeout);
 
+            Debug.WriteLine("================== B");
             // refresh ini untuk menghilangkan visual challenge (semacam captcha)
             Chrome.Refresh();
 
+            Debug.WriteLine("================== C");
             // ulangi ambil elemennya karena sudah direfresh
             navProfile = Chrome!.FindElementByXPath(xpath, Timeout);
 
             if (!navProfile.State || navProfile.Item!.TagName == "button")
             {
+                Debug.WriteLine("================== D");
                 result.Status = TikTokAccountStatus.NotLoggedIn;
                 Account = result;
 

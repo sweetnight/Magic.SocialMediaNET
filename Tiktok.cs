@@ -84,14 +84,19 @@ namespace Magic.SocialMediaNET
 
             TikTokAccount result = new TikTokAccount();
 
+            // disini cookies sudah diinject. Baik itu valid ataupun tidak.
             Chrome!.Navigate("https://www.tiktok.com");
 
             // ambil salah satu dari 3 tagname. 2 buah script untuk indikator sudah login. 1 buah input untuk indikator belum login.
-            BrowserAutomationNET.WebElement navProfile = Chrome!.FindElementByXPath("//a[@data-e2e='nav-profile' and starts-with(@href, '/@') and string-length(@href) > 2]|//button[@type='button' and @data-e2e='nav-login-button']", Timeout);
+            string xpath = $"//a[@data-e2e='nav-profile' and starts-with(@href, '/@') and string-length(@href) > 2]|(//button[contains(@class, 'TUXButton') and .//div[normalize-space({Chrome.ToLower("text()")}) = 'log in']])[1]";
 
-            /*
-            <button type="button" data-e2e="nav-login-button" class="efna91q2 css-ns1v7o-Button-StyledLogin ehk74z00">Log in</button>
-            */
+            BrowserAutomationNET.WebElement navProfile = Chrome!.FindElementByXPath(xpath, Timeout);
+
+            // refresh ini untuk menghilangkan visual challenge (semacam captcha)
+            Chrome.Refresh();
+
+            // ulangi ambil elemennya karena sudah direfresh
+            navProfile = Chrome!.FindElementByXPath(xpath, Timeout);
 
             if (!navProfile.State || navProfile.Item!.TagName == "button")
             {

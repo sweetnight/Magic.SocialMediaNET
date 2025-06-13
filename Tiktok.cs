@@ -1,6 +1,5 @@
 ﻿using Magic.BrowserAutomationNET;
 using System.Diagnostics;
-using System.Security.Policy;
 
 namespace Magic.SocialMediaNET
 {

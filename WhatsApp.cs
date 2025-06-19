@@ -1,6 +1,5 @@
 ﻿using Magic.BrowserAutomationNET;
 using OpenQA.Selenium;
-using System.Diagnostics;
 
 namespace Magic.SocialMediaNET
 {

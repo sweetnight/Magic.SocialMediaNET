@@ -29,19 +29,48 @@ namespace Magic.SocialMediaNET
             Account result = new Account();
 
             WebPage currentUrl;
+            BrowserAutomationNET.WebElement inputPassORPageError;
             BrowserAutomationNET.WebElement userIDScript;
             string userIDJSON;
             string splits;
             string userID;
             bool stillLoggedIn = false;
 
-            int maxIteration = cookies == null ? 1 : 3;
+            int maxIteration = cookies == null ? 1 : 2;
 
-            // diulang 3x karena suka logout sendiri oleh FB ketika sudah login
+            // diulang 2x karena suka logout sendiri oleh FB ketika sudah login
             for (int i = 0; i < maxIteration; i++)
             {
-                Chrome!.Navigate("https://www.facebook.com/profile.php");
+                while (true)
+                {
+                    Chrome!.Navigate("https://www.facebook.com/profile.php");
 
+                    Debug.WriteLine("Facebook ==================== : Memastikan chrome tidak eror ketika navigasi ke profile FB.");
+
+                    inputPassORPageError = Chrome.FindElementByXPath($"//form[@data-testid='royal_login_form' and @method='post']//input[@type='password' and contains(@class, 'inputtext') and @name='pass' and @data-testid='royal-pass']|//form[@id='login_form' and {Chrome.ToLower("@method")}='post']//input[@type='password' and @name='pass']|//h1/span[contains(text(), 'This page isn’t working')]");
+
+                    if (inputPassORPageError.Item == null)
+                    {
+                        Debug.WriteLine("Facebook ==================== : Masuk sini berarti pakai timeout. Asumsi halaman bisa apa saja, yang jelas tidak eror.");
+                        break;
+                    }
+
+                    string inputPassORPageErrorElementName = inputPassORPageError.Item.TagName.ToLowerInvariant();
+
+                    Debug.WriteLine("Facebook ==================== : Elemen yang ditemukan adalah: " + inputPassORPageErrorElementName);
+
+                    if (inputPassORPageErrorElementName != "input")
+                    {
+                        Debug.WriteLine("Facebook ==================== : Terjadi halaman eror. Mengulangi di looping berikutnya.");
+                        Thread.Sleep(3000);
+                        continue;
+                    }
+
+                    Debug.WriteLine("Facebook ==================== : Profile FB berhasil dibuka tanpa eror. Melanjutkan kegiatan.");
+
+                    break;
+                }
+                
                 if (cookies != null)
                 {
                     Chrome.AddCookiesFromJson(cookies);
@@ -56,13 +85,8 @@ namespace Magic.SocialMediaNET
                     return result;
                 }
 
-                if (currentUrl.Url.Contains("m.facebook.com"))
-                {
-                    return CheckLoggedInMobile();
-                }
-
                 // ambil salah satu dari 3 tagname. 2 buah script untuk indikator sudah login. 1 buah input untuk indikator belum login.
-                userIDScript = Chrome.FindElementByXPath("//script[@id='__eqmc']|//script[contains(text(), '__user')]|(//input[@data-testid='royal_pass'])[1]");
+                userIDScript = Chrome.FindElementByXPath("//script[@id='__eqmc']|//script[contains(text(), '__user')]|//form[@data-testid='royal_login_form' and @method='post']//input[@type='password' and contains(@class, 'inputtext') and @name='pass' and @data-testid='royal-pass']");
 
                 if (userIDScript == null || !userIDScript.State || userIDScript.Item!.TagName == "input") continue;
 

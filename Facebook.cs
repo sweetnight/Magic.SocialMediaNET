@@ -30,7 +30,7 @@ namespace Magic.SocialMediaNET
 
             WebPage currentUrl;
             BrowserAutomationNET.WebElement inputPassORPageError;
-            BrowserAutomationNET.WebElement userIDScript;
+            BrowserAutomationNET.WebElement? userIDScript;
             string userIDJSON;
             string splits;
             string userID;
@@ -47,7 +47,7 @@ namespace Magic.SocialMediaNET
 
                     Debug.WriteLine("Facebook ==================== : Memastikan chrome tidak eror ketika navigasi ke profile FB.");
 
-                    inputPassORPageError = Chrome.FindElementByXPath($"//form[@data-testid='royal_login_form' and @method='post']//input[@type='password' and contains(@class, 'inputtext') and @name='pass' and @data-testid='royal-pass']|//form[@id='login_form' and {Chrome.ToLower("@method")}='post']//input[@type='password' and @name='pass']|//h1/span[contains(text(), 'This page isn’t working')]");
+                    inputPassORPageError = Chrome.FindElementByXPath($"//script[@id='__eqmc']|//script[contains(text(), '__user')]|//form[@data-testid='royal_login_form' and @method='post']//input[@type='password' and contains(@class, 'inputtext') and @name='pass' and @data-testid='royal-pass']|//form[@id='login_form' and {Chrome.ToLower("@method")}='post']//input[@type='password' and @name='pass']|//h1/span[contains(text(), 'This page isn’t working')]");
 
                     if (inputPassORPageError.Item == null)
                     {
@@ -59,7 +59,7 @@ namespace Magic.SocialMediaNET
 
                     Debug.WriteLine("Facebook ==================== : Elemen yang ditemukan adalah: " + inputPassORPageErrorElementName);
 
-                    if (inputPassORPageErrorElementName != "input")
+                    if (inputPassORPageErrorElementName == "span")
                     {
                         Debug.WriteLine("Facebook ==================== : Terjadi halaman eror. Mengulangi di looping berikutnya.");
                         Thread.Sleep(3000);

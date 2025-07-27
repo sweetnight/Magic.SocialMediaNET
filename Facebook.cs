@@ -1,8 +1,7 @@
-﻿using Magic.BrowserAutomationNET;
-using Magic.SystemAddonsNET;
+﻿using System.Diagnostics;
+using System.Text.Json;
+using Magic.BrowserAutomationNET;
 using OpenQA.Selenium;
-using Newtonsoft.Json;
-using System.Diagnostics;
 
 namespace Magic.SocialMediaNET
 {
@@ -90,7 +89,7 @@ namespace Magic.SocialMediaNET
 
                 if (userIDScript == null || !userIDScript.State || userIDScript.Item!.TagName == "input") continue;
 
-                userIDJSON = userIDScript.Item.GetAttribute("innerHTML");
+                userIDJSON = userIDScript.Item.GetAttribute("innerHTML")!;
                 splits = userIDJSON.Split(new string[] { "__user=" }, StringSplitOptions.None).ToList()[1];
                 userID = splits.Split('&').ToList()[0]; // user id longint OR 0 if not logged in
 
@@ -125,7 +124,7 @@ namespace Magic.SocialMediaNET
 
             if (userIDaTag == null) return result;
 
-            string hrefValue = userIDaTag.Item!.GetAttribute("href");
+            string hrefValue = userIDaTag.Item!.GetAttribute("href")!;
 
             if (hrefValue.Contains("/login"))
             {
@@ -144,6 +143,11 @@ namespace Magic.SocialMediaNET
             return result;
         } // end of method
 
+        public Facebook()
+        {
+
+        } // end of method
+
         public void ChangeLanguage(string language)
         {
             language = language.ToLower();
@@ -155,7 +159,7 @@ namespace Magic.SocialMediaNET
             if (isLanguageCorrect) return;
 
             // FB bahasa enggreeess, ubah ke bahasa endonesah
-            Chrome!.Navigate("https://web.facebook.com/settings?tab=language&section=account&view");
+            Chrome!.Navigate("https://www.facebook.com/settings?tab=language&section=account&view");
 
             // EDIT BUTTON
 
@@ -241,7 +245,7 @@ namespace Magic.SocialMediaNET
                 return (false, false);
             }
 
-            string ariaLabel = checkedElement.Item!.GetAttribute("aria-label");
+            string ariaLabel = checkedElement.Item!.GetAttribute("aria-label")!;
 
             if (language == "indonesia" && ariaLabel == "Cari di Facebook")
             {
@@ -262,7 +266,7 @@ namespace Magic.SocialMediaNET
 
             BrowserAutomationNET.WebElement checkedElement = Chrome!.FindElementByXPath("//div[@id='profile_intro_card']//span[contains(text(), 'Edit')]");
 
-            string ariaLabel = checkedElement.Item!.GetAttribute("innerHTML");
+            string ariaLabel = checkedElement.Item!.GetAttribute("innerHTML")!;
 
             if (language == "indonesia" && ariaLabel == "Edit info publik")
             {
@@ -322,7 +326,7 @@ namespace Magic.SocialMediaNET
         {
             if (cookiesLoginFirst)
             {
-                Chrome!.Navigate("https://web.facebook.com");
+                Chrome!.Navigate("https://www.facebook.com");
                 Chrome.AddCookiesFromJson(Cookies!);
             }
 
@@ -341,7 +345,7 @@ namespace Magic.SocialMediaNET
                 return false;
             }
 
-            string ariaLabelTindakanButton = tindakanButton.Item!.GetAttribute("aria-label");
+            string ariaLabelTindakanButton = tindakanButton.Item!.GetAttribute("aria-label")!;
 
             if(ariaLabelTindakanButton == "Tindakan untuk postingan ini")
             {
@@ -478,7 +482,7 @@ namespace Magic.SocialMediaNET
 
             if (cookiesLoginFirst)
             {
-                Chrome!.Navigate("https://web.facebook.com");
+                Chrome!.Navigate("https://www.facebook.com");
                 Chrome.AddCookiesFromJson(Cookies!);
             }
 
@@ -492,7 +496,7 @@ namespace Magic.SocialMediaNET
 
             Magic.BrowserAutomationNET.WebElement likeButton = Chrome.FindElementByXPath("//div[@aria-label='Suka' and @role='button' and .//div[@role='none']]|//div[@aria-label='Hapus Suka' and @role='button' and .//div[@role='none']]|//div[@aria-label='Suka Aktif' and @role='button']");
 
-            string ariaLabelLikeButton = likeButton.Item!.GetAttribute("aria-label");
+            string ariaLabelLikeButton = likeButton.Item!.GetAttribute("aria-label")!;
 
             if(ariaLabelLikeButton == "Hapus Suka" || ariaLabelLikeButton == "Suka Aktif")
             {
@@ -510,7 +514,7 @@ namespace Magic.SocialMediaNET
         {
             if(cookiesLoginFirst)
             {
-                Chrome!.Navigate("https://web.facebook.com");
+                Chrome!.Navigate("https://www.facebook.com");
                 Chrome.AddCookiesFromJson(Cookies!);
             }
 
@@ -576,7 +580,7 @@ namespace Magic.SocialMediaNET
 
             Magic.BrowserAutomationNET.WebElement editPrivasiButton = Chrome.FindElementByXPath("//div[contains(@aria-label, 'Edit privasi') and @role='button']");
             
-            string ariaLabelEditPrivasiButton = editPrivasiButton.Item!.GetAttribute("aria-label");
+            string ariaLabelEditPrivasiButton = editPrivasiButton.Item!.GetAttribute("aria-label")!;
 
             if (!ariaLabelEditPrivasiButton.Contains("Publik"))
             {
@@ -633,7 +637,7 @@ namespace Magic.SocialMediaNET
 
             if (cookiesLoginFirst)
             {
-                Chrome!.Navigate("https://web.facebook.com");
+                Chrome!.Navigate("https://www.facebook.com");
                 Chrome.AddCookiesFromJson(Cookies!);
             }
 
@@ -655,7 +659,7 @@ namespace Magic.SocialMediaNET
                 return false;
             }
 
-            string ariaLabel = tulisKomentarInput.Item!.GetAttribute("aria-label");
+            string ariaLabel = tulisKomentarInput.Item!.GetAttribute("aria-label")!;
 
             SafeClickResult safeClickResult;
 
@@ -663,7 +667,7 @@ namespace Magic.SocialMediaNET
             {
                 safeClickResult = tulisKomentarInput.SafeClick();
                 tulisKomentarInput = Chrome.FindElementByXPath("//div[@aria-label='Komentari']|//div[contains(@aria-label, 'Tulis komentar')]");
-                ariaLabel = tulisKomentarInput.Item!.GetAttribute("aria-label");
+                ariaLabel = tulisKomentarInput.Item!.GetAttribute("aria-label")!;
             }
 
             if (ariaLabel == "Komentari")
@@ -788,7 +792,7 @@ namespace Magic.SocialMediaNET
                 return 0;
             }
 
-            string ariaLabel = likeButton.Item!.GetAttribute("aria-label");
+            string ariaLabel = likeButton.Item!.GetAttribute("aria-label")!;
 
             if (ariaLabel == "Disukai")
             {
@@ -1141,9 +1145,9 @@ namespace Magic.SocialMediaNET
                     }
 
 
-                    string messageDateDataString = lastMessageDate.Item!.GetAttribute("data-store");
+                    string messageDateDataString = lastMessageDate.Item!.GetAttribute("data-store")!;
 
-                    MessageTimeDataStore messageTimeDataStore = JsonConvert.DeserializeObject<MessageTimeDataStore>(messageDateDataString)!;
+                    MessageTimeDataStore messageTimeDataStore = JsonSerializer.Deserialize<MessageTimeDataStore>(messageDateDataString)!;
 
                     long nowUnix = Magic.SystemAddonsNET.DateTime.NowUnix();
 
@@ -1236,9 +1240,9 @@ namespace Magic.SocialMediaNET
                         return null!;
                     }
 
-                    string messageDateDataString = abbr.Item!.GetAttribute("data-store");
+                    string messageDateDataString = abbr.Item!.GetAttribute("data-store")!;
 
-                    MessageTimeDataStore messageTimeDataStore = JsonConvert.DeserializeObject<MessageTimeDataStore>(messageDateDataString)!;
+                    MessageTimeDataStore messageTimeDataStore = JsonSerializer.Deserialize<MessageTimeDataStore>(messageDateDataString)!;
 
                     messageCreatedTime = messageTimeDataStore!.Time;
 
@@ -1250,7 +1254,7 @@ namespace Magic.SocialMediaNET
                     BrowserAutomationNET.WebElement link = webElement.FindElementByXPath(".//a");
                     BrowserAutomationNET.WebElement h3 = webElement.FindElementByXPath(".//h3");
 
-                    url = link.Item!.GetAttribute("href");
+                    url = link.Item!.GetAttribute("href")!;
 
                     string splits = url.Split(new string[] { "cid.g." }, StringSplitOptions.None).ToList()[1];
                     id = Convert.ToInt64(splits.Split('&').ToList()[0]);
@@ -1307,7 +1311,7 @@ namespace Magic.SocialMediaNET
                 if (StopFlag)
                 {
                     BreakStatus = true;
-                    Message = "Stop Flag is true getting marketplace message data.";
+                    Message = "Stop Flag is true getting marketplace Message data.";
 
                     StopFlagEventArgs stopFlagEventArgs = new StopFlagEventArgs();
                     stopFlagEventArgs.Chrome = this.Chrome;
@@ -1362,26 +1366,26 @@ namespace Magic.SocialMediaNET
 
 
                 // element ini untuk mengambil data nama yg terakhir chat
-                BrowserAutomationNET.WebElement lastMessageBubble = Chrome.FindElementByXPath("(//div[@data-sigil='message-xhp marea'])[last()]", Timeout);
+                BrowserAutomationNET.WebElement lastMessageBubble = Chrome.FindElementByXPath("(//div[@data-sigil='Message-xhp marea'])[last()]", Timeout);
 
                 // element ini untuk mengambil UID yg terakhir ngechat & timestamp
-                BrowserAutomationNET.WebElement lastMessageWrapperElement = Chrome.FindElementByXPath("(//div[@data-sigil='message-text'])[last()]", Timeout);
+                BrowserAutomationNET.WebElement lastMessageWrapperElement = Chrome.FindElementByXPath("(//div[@data-sigil='Message-text'])[last()]", Timeout);
 
                 // element ini untuk mengambil isi messagenya
-                BrowserAutomationNET.WebElement lastMessageElement = Chrome.FindElementByXPath("(//div[@data-sigil='message-text']//span//div)[last()]", Timeout);
+                BrowserAutomationNET.WebElement lastMessageElement = Chrome.FindElementByXPath("(//div[@data-sigil='Message-text']//span//div)[last()]", Timeout);
 
 
                 // element ini untuk mengambil URL product
                 BrowserAutomationNET.WebElement urlLinkElement = Chrome.FindElementByXPath("//div[@id='root']//a", Timeout);
 
                 // MESSAGE FROM
-                string lastMessageBubbleDataStoreJson = lastMessageBubble.Item!.GetAttribute("data-store");
-                MessageBubbleDataStore lastMessageBubbleDataStore = JsonConvert.DeserializeObject<MessageBubbleDataStore>(lastMessageBubbleDataStoreJson)!;
+                string lastMessageBubbleDataStoreJson = lastMessageBubble.Item!.GetAttribute("data-store")!;
+                MessageBubbleDataStore lastMessageBubbleDataStore = JsonSerializer.Deserialize<MessageBubbleDataStore>(lastMessageBubbleDataStoreJson)!;
                 marketplaceMessageData.MessageFrom = lastMessageBubbleDataStore.Name;
 
                 // MESSAGE FROM UID & MESSAGE TIME
                 string lastMessageWrapperElementDataStoreJson = lastMessageWrapperElement.Item!.GetAttribute("data-store")!;
-                MessageWrapperElementDataStore lastMessageWrapperElementDataStore = JsonConvert.DeserializeObject<MessageWrapperElementDataStore>(lastMessageWrapperElementDataStoreJson)!;
+                MessageWrapperElementDataStore lastMessageWrapperElementDataStore = JsonSerializer.Deserialize<MessageWrapperElementDataStore>(lastMessageWrapperElementDataStoreJson)!;
                 marketplaceMessageData.MessageFromUid = lastMessageWrapperElementDataStore.Author;
                 marketplaceMessageData.MessageTime = lastMessageWrapperElementDataStore.Timestamp / 1000;
 
@@ -1393,7 +1397,7 @@ namespace Magic.SocialMediaNET
                 marketplaceMessageData.ProductTitle = title.Split(new[] { " (Kode" }, StringSplitOptions.None).ToList()[0];
 
                 // PRODUCT URL
-                string urlLink = urlLinkElement.Item!.GetAttribute("href");
+                string urlLink = urlLinkElement.Item!.GetAttribute("href")!;
                 marketplaceMessageData.ProductURL = urlLink.Replace("mobile.facebook.com", "web.facebook.com");
 
                 string urlPart2 = urlLink.Split(new string[] { "item/" }, StringSplitOptions.None)[1];
@@ -1470,7 +1474,7 @@ namespace Magic.SocialMediaNET
                         break;
                     }
 
-                    lastSelfMessageElement = Chrome.FindElementByXPath($"(//div[@data-sigil='message-text' and contains(@data-store, '{facebookUID}')]//span//div)[last()]", 1);
+                    lastSelfMessageElement = Chrome.FindElementByXPath($"(//div[@data-sigil='Message-text' and contains(@data-store, '{facebookUID}')]//span//div)[last()]", 1);
 
                     if (lastSelfMessageElement.State)
                     {
@@ -1498,7 +1502,7 @@ namespace Magic.SocialMediaNET
 
                 if (!safe) return null!;
 
-                return lastSelfMessageElement.Item!.GetAttribute("innerHTML");
+                return lastSelfMessageElement.Item!.GetAttribute("innerHTML")!;
             } // end of method
 
             /// <summary>
@@ -1530,7 +1534,7 @@ namespace Magic.SocialMediaNET
                 if (StopFlag)
                 {
                     BreakStatus = true;
-                    message = "Stop Flag is true when ready to click send message button.";
+                    message = "Stop Flag is true when ready to click send Message button.";
 
                     #region execute StopFlag Event
                     StopFlagEventArgs stopFlagEventArgs = new StopFlagEventArgs();

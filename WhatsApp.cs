@@ -2,8 +2,10 @@
 using OpenQA.Selenium;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 
 namespace Magic.SocialMediaNET
 {
@@ -96,7 +98,7 @@ namespace Magic.SocialMediaNET
 
         } // end of method
 
-        public ConnectionStatus CheckConnection()
+        public ConnectionStatus CheckConnection(int loadingTimeout)
         {
 
             WebPage webPage = Chrome.GetCurrentUrl();
@@ -112,9 +114,9 @@ namespace Magic.SocialMediaNET
             bool eventFired = false;
 
             // 600 --> 10 menit, karena ada Thread.Sleep(1000) per loop
-            for(int i = 0; i < 600; i++)
+            for(int i = 0; i < loadingTimeout; i++)
             {
-                profileButton = Chrome.FindElementByXPath($"//header//button[{Chrome.ToLower("@aria-label")}='profile']|//header//button[{Chrome.ToLower("@aria-label")}='profil']|//div[{Chrome.ToLower("normalize-space(.)")}='steps to log in']|//div[{Chrome.ToLower("normalize-space(.)")}='langkah untuk login']|//div[contains({Chrome.ToLower("text()")}, 'loading your chats')]", Timeout);
+                profileButton = Chrome.FindElementByXPath($"//header//button[{Chrome.ToLower("@aria-label")}='profile']|//header//button[{Chrome.ToLower("@aria-label")}='profil']|//div[{Chrome.ToLower("normalize-space(.)")}='steps to log in']|//div[{Chrome.ToLower("normalize-space(.)")}='langkah untuk login']|//div[contains({Chrome.ToLower("text()")}, 'loading your chats')]|//div[contains({Chrome.ToLower("text()")}, 'memuat chat')]", Timeout);
 
                 if (!profileButton.State) return ConnectionStatus.NotConnected;
 
@@ -284,18 +286,23 @@ namespace Magic.SocialMediaNET
                 .Replace("\n", "\\n");
 
             string jsSend = @$"
-                return WPP.chat
-                    .find('{filteredPhone}@c.us')
-                    .then(() => 
-                        WPP.chat.sendTextMessage('{filteredPhone}@c.us', '{message}', {{
+                var callback = arguments[arguments.length - 1];
+
+                (async () => {{
+                    try {{
+                        await WPP.chat.find('{filteredPhone}@c.us');
+                        await WPP.chat.sendTextMessage('{filteredPhone}@c.us', '{message}', {{
                             createChat: true
-                        }})
-                    )
-                    .then(() => 'success')
-                    .catch(e => 'error: ' + e.message);
+                        }});
+                        callback('success');
+                    }} catch (e) {{
+                        callback('error: ' + (e && e.message ? e.message : e));
+                    }}
+                }})();
             ";
 
-            bool injectResult = Chrome.InjectScript(jsSend, out string jsResult);
+            bool injectResult = Chrome.InjectScriptAsync(jsSend, out string jsResult);
+
             response = jsResult;
 
             if (!injectResult)
@@ -328,8 +335,7 @@ namespace Magic.SocialMediaNET
                 failReason = FailReason.SomehowFailSendMessage;
                 return false;
             }
-        }
-
+        } // end of method
 
         public bool SendImage(string destinationNumber, string imageFilename, string caption, out string response, out FailReason? failReason)
         {
@@ -405,10 +411,12 @@ namespace Magic.SocialMediaNET
                 .Replace("\n", "\\n");
 
             string jsSend = @$"
-                return WPP.chat
-                    .find('{filteredPhone}@c.us')
-                    .then(() =>
-                        WPP.chat.sendFileMessage(
+                var callback = arguments[arguments.length - 1];
+
+                (async () => {{
+                    try {{
+                        await WPP.chat.find('{filteredPhone}@c.us');
+                        await WPP.chat.sendFileMessage(
                             '{filteredPhone}@c.us',
                             'data:{mimeType};base64,{base64Data}',
                             {{
@@ -416,14 +424,16 @@ namespace Magic.SocialMediaNET
                                 caption: '{caption}',
                                 filename: '{Path.GetFileName(imageFilename)}'
                             }}
-                        )
-                    )
-                    .then(() => 'success')
-                    .catch(e => 'error: ' + e.message);
+                        );
+                        callback('success');
+                    }} catch (e) {{
+                        callback('error: ' + (e && e.message ? e.message : e));
+                    }}
+                }})();
             ";
 
-            object? result = ((IJavaScriptExecutor)Chrome.Driver!).ExecuteScript(jsSend);
-            string jsResult = result?.ToString() ?? "";
+            bool injectResult = Chrome.InjectScriptAsync(jsSend, out string jsResult);
+            response = jsResult;
 
             if (jsResult.StartsWith("success"))
             {
@@ -515,6 +525,69 @@ namespace Magic.SocialMediaNET
         } // end of method
 
         public bool GetAllGroupIdentities(out string response, out FailReason? failReason)
+        {
+            bool isWPPInjected = WPPConnectSafeInject(out _, out failReason);
+
+            if (!isWPPInjected)
+            {
+                response = "Check number is FAIL because WPP Script can't be injected.";
+                return false;
+            }
+
+            WhatsAppEvents?.Invoke(new WhatsAppEventArgs(EventState.StartGetAllGroupIdentities));
+
+            string jsCode = @"
+                const callback = arguments[arguments.length - 1];
+                WPP.chat.list()
+                    .then(chats => {
+                        const filtered = chats
+                            .filter(c => c.isGroup)
+                            .map(g => {
+                                return {
+                                    groupJid: g.id && g.id._serialized ? g.id._serialized : g.id,
+                                    name: g.formattedTitle || g.name || '',
+                                    isLocked: (g.groupMetadata && g.groupMetadata.announce) || false
+                                };
+                            });
+                        callback(JSON.stringify(filtered));
+                    })
+                    .catch(err => callback({ error: err.toString() }));
+            ";
+
+            try
+            {
+                object? result = ((IJavaScriptExecutor)Chrome.Driver!).ExecuteAsyncScript(jsCode);
+
+                if (result is IDictionary<string, object> err && err.ContainsKey("error"))
+                {
+                    response = "JavaScript error: " + err["error"];
+                    failReason = FailReason.JavascriptError;
+                    return false;
+                }
+
+                response = result?.ToString() ?? "[]";
+
+                Debug.WriteLine("Filtered group JSON:");
+                Debug.WriteLine(response);
+
+                return true;
+            }
+            catch (OpenQA.Selenium.JavaScriptException jsEx)
+            {
+                response = "JavaScript error: " + jsEx.Message;
+                Debug.WriteLine(response);
+                failReason = FailReason.JavascriptError;
+                return false;
+            }
+            catch (Exception ex)
+            {
+                response = "General error: " + ex.Message;
+                failReason = FailReason.UnknownError;
+                return false;
+            }
+        } // end of method
+
+        public bool GetAllGroupIdentities_(out string response, out FailReason? failReason)
         {
 
             bool isWPPInjected = WPPConnectSafeInject(out _, out failReason);
@@ -621,11 +694,18 @@ namespace Magic.SocialMediaNET
                         const callback = arguments[arguments.length - 1];
                         (async () => {{
                             try {{
-                                const metadata = await WPP.group.getParticipants('{groupJid}');
+                                const participants = await WPP.group.getParticipants('{groupJid}');
                                 const isAdmin = await WPP.group.iAmAdmin('{groupJid}');
+                                let code = '';
+                                try {{
+                                    code = await WPP.group.getInviteCode('{groupJid}');
+                                }} catch (icErr) {{
+                                    code = '';
+                                }}
                                 callback({{
-                                    membersAmount: metadata.length,
-                                    isAdmin: isAdmin
+                                    membersAmount: participants.length,
+                                    isAdmin: isAdmin,
+                                    inviteCode: code
                                 }});
                             }} catch (e) {{
                                 callback({{ error: e.toString() }});
@@ -650,6 +730,11 @@ namespace Magic.SocialMediaNET
                             updatedGroup["membersAmount"] = Convert.ToInt32(members);
                         if (detail.TryGetValue("isAdmin", out var admin))
                             updatedGroup["isAdmin"] = Convert.ToBoolean(admin);
+                        if (detail.TryGetValue("inviteCode", out var code))
+                        {
+                            string inviteCode = code?.ToString() ?? "";
+                            updatedGroup["inviteCode"] = inviteCode;
+                        }
                     }
 
                     detailedGroups.Add(updatedGroup);
@@ -872,5 +957,119 @@ namespace Magic.SocialMediaNET
 
     } // end of class
 
+    public static class WhatsAppRichTextBox
+    {
+        public static void WhatsAppFormat(this RichTextBox box, string input)
+        {
+            box.Clear();
+
+            var rules = new List<TextFormatRule>
+            {
+                new TextFormatRule(@"\*(.*?)\*", FontStyle.Bold, 0),
+                new TextFormatRule(@"_(.*?)_", FontStyle.Italic, 1),
+                new TextFormatRule(@"~(.*?)~", FontStyle.Strikeout, 2),
+                new TextFormatRule(@"`(.*?)`", FontStyle.Regular, 3, true)
+            };
+
+            // Kumpulkan semua match dari semua format
+            var segments = new List<TextSegment>();
+
+            foreach (var rule in rules)
+            {
+                foreach (Match match in Regex.Matches(input, rule.Pattern))
+                {
+                    segments.Add(new TextSegment
+                    {
+                        Start = match.Index,
+                        Length = match.Length,
+                        InnerText = match.Groups[1].Value,
+                        Style = rule.Style,
+                        Priority = rule.Priority,
+                        IsMonospace = rule.IsMonospace
+                    });
+                }
+            }
+
+            // Sort by start, lalu prioritas tinggi dulu
+            segments = segments
+                .OrderBy(s => s.Start)
+                .ThenByDescending(s => s.Priority)
+                .ToList();
+
+            // Buat pointer dan hasil potongan
+            var result = new List<(string text, Font font, Color? color)>();
+            int pointer = 0;
+
+            foreach (var seg in segments)
+            {
+                if (seg.Start < pointer) continue; // skip overlap
+
+                // Tambahkan teks biasa sebelum segmen
+                if (seg.Start > pointer)
+                {
+                    string plain = input.Substring(pointer, seg.Start - pointer);
+                    result.Add((plain, box.Font, null));
+                }
+
+                // Tambahkan segmen terformat
+                Font f = seg.IsMonospace
+                    ? new Font("Consolas", box.Font.Size)
+                    : new Font(box.Font, seg.Style);
+
+                Color? c = seg.IsMonospace ? Color.Gray : null;
+                result.Add((seg.InnerText, f, c));
+
+                pointer = seg.Start + seg.Length;
+            }
+
+            // Tambahkan sisa teks terakhir
+            if (pointer < input.Length)
+            {
+                string last = input.Substring(pointer);
+                result.Add((last, box.Font, null));
+            }
+
+            // Render ke RichTextBox
+            foreach (var item in result)
+            {
+                box.SelectionFont = item.font;
+
+                if (item.color.HasValue)
+                    box.SelectionColor = item.color.Value;
+                else
+                    box.SelectionColor = box.ForeColor; // <== RESET ke warna normal!
+
+                box.AppendText(item.text);
+            }
+
+            box.SelectionLength = 0;
+        }
+
+        public class TextFormatRule
+        {
+            public string Pattern { get; }
+            public FontStyle Style { get; }
+            public int Priority { get; }
+            public bool IsMonospace { get; }
+
+            public TextFormatRule(string pattern, FontStyle style, int priority, bool mono = false)
+            {
+                Pattern = pattern;
+                Style = style;
+                Priority = priority;
+                IsMonospace = mono;
+            }
+        }
+
+        public class TextSegment
+        {
+            public int Start;
+            public int Length;
+            public string InnerText = "";
+            public FontStyle Style;
+            public int Priority;
+            public bool IsMonospace;
+        }
+    } // end of class
 
 } // end of namespace
